@@ -22,7 +22,9 @@ module FakeWeb
 
     def registered_uri?(method, uri)
       normalized_uri = normalize_uri(uri)
-      uri_map[normalized_uri].has_key?(method) || uri_map[normalized_uri].has_key?(:any)
+      
+      uri_map[normalized_uri].has_key?(method) ||
+      uri_map[normalized_uri].has_key?(:any)
     end
 
     def registered_uri(method, uri)
@@ -62,7 +64,8 @@ module FakeWeb
         else
           uri = 'http://' + uri unless uri.match('^https?://')
           parsed_uri = URI.parse(uri)
-          parsed_uri.query = sort_query_params(parsed_uri.query)
+          parsed_uri.query = FakeWeb.ignore_query_params? ? nil :
+            sort_query_params(parsed_uri.query)
           parsed_uri
         end
       normalized_uri.normalize

@@ -39,6 +39,29 @@ module FakeWeb
   def self.allow_net_connect?
     @allow_net_connect
   end
+  
+  # Enables or disables ignoring of query parameters for registered URIs.
+  #
+  # When you set <tt>FakeWeb.ignore_query_params = false</tt> (the default),
+  # all registered requests will fail unless they match the provided query
+  # parameters.
+  #
+  # When you set <tt>FakeWeb.ignore_query_params = true</tt>, though, any URIs
+  # that are supplied without query parameters will match the same URIs when
+  # they are requested, whether they have query parameters or not.
+  def self.ignore_query_params=(ignore)
+    @ignore_query_params = ignore
+  end
+  
+  # Pay attention to query parameters by default.
+  self.ignore_query_params = false
+  
+  # Returns +true+ if query parameters on a request should be ignored, or
+  # +false+ if matching query parameters are needed for the corresponding
+  # response to be supplied.
+  def self.ignore_query_params?
+    @ignore_query_params
+  end
 
   # This exception is raised if you set <tt>FakeWeb.allow_net_connect =
   # false</tt> and subsequently try to make a request to a URI you haven't

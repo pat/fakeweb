@@ -33,5 +33,28 @@ class TestFakeWebQueryString < Test::Unit::TestCase
   def test_registry_sort_query_params_sorts_by_value_if_keys_collide
     assert_equal "a=1&a=2&b=2", FakeWeb::Registry.instance.send(:sort_query_params, "a=2&b=2&a=1")
   end
-
+  
+  def test_register_url_without_query_and_ignoring_query_params
+    FakeWeb.ignore_query_params = true
+    FakeWeb.register_uri('http://example.com/', :string => 'foo')
+    assert FakeWeb.registered_uri?('http://example.com/?b=1&a=1')
+  end
+  
+  def test_register_url_without_query_and_not_ignoring_query_params
+    FakeWeb.ignore_query_params = false
+    FakeWeb.register_uri('http://example.com/', :string => 'foo')
+    assert !FakeWeb.registered_uri?('http://example.com/?b=1&a=1')
+  end
+  
+  def test_response_while_ignoring_query_params
+    FakeWeb.ignore_query_params = true
+    FakeWeb.register_uri('http://example.com/', :string => 'foo')
+    assert_equal 'foo', open('http://example.com/?b=1&a=1').string
+  end
+  
+  def test_response_when_not_ignoring_query_params
+    FakeWeb.ignore_query_params = false
+    FakeWeb.register_uri('http://example.com/', :string => 'foo')
+    assert_not_equal 'foo', open('http://example.com/?b=1&a=1').string
+  end
 end
