@@ -2,9 +2,14 @@ require 'singleton'
 
 require 'fake_web/ext/net_http'
 require 'fake_web/registry'
+require 'fake_web/request_matcher'
 require 'fake_web/response'
 require 'fake_web/responder'
 require 'fake_web/stub_socket'
+
+if defined?(Spec)
+  Spec::Runner.configure { |config| config.include FakeWeb::Matchers }
+end
 
 module FakeWeb
 
@@ -61,6 +66,17 @@ module FakeWeb
   # response to be supplied.
   def self.ignore_query_params?
     @ignore_query_params
+  end
+  
+  # A collection of all requests intercepted by FakeWeb, where each item is an
+  # array with two items: the method, and the URI.
+  def self.requests
+    @requests ||= []
+  end
+  
+  # Clear all stored requests
+  def self.clear_requests
+    requests.clear
   end
 
   # This exception is raised if you set <tt>FakeWeb.allow_net_connect =
@@ -151,7 +167,8 @@ module FakeWeb
     when 1 then         uri = args.first
     else   raise ArgumentError.new("wrong number of arguments (#{args.length} for method = :any, uri)")
     end
-
+    
+    requests << [method, uri]
     Registry.instance.response_for(method, uri, &block)
   end
 
