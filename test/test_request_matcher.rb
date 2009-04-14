@@ -38,7 +38,8 @@ class TestRequestMatcher < Test::Unit::TestCase
   
   def test_should_not_match_when_not_ignoring_query_params
     FakeWeb.ignore_query_params = false
-    FakeWeb.register_uri('http://example.com/', :string => 'foo')
+    FakeWeb.register_uri('http://example.com/',         :string => 'foo')
+    FakeWeb.register_uri('http://example.com/?a=1&b=2', :string => 'bar')
     open('http://example.com/?a=1&b=2')
     matcher = FakeWeb::RequestMatcher.new('http://example.com/')
     assert !matcher.matches?(FakeWeb)
