@@ -7,7 +7,7 @@ require 'fake_web/response'
 require 'fake_web/responder'
 require 'fake_web/stub_socket'
 
-if defined?(Spec)
+if defined?(Spec) && defined?(Spec::Runner)
   Spec::Runner.configure { |config| config.include FakeWeb::Matchers }
 end
 
